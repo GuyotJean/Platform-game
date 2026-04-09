@@ -1,0 +1,125 @@
+:root {
+    --bg-color: #0f111a;
+    --text-color: #e2e8f0;
+    --accent: #00ffcc;
+    --neon-pink: #ff007f;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#game-container {
+    position: relative;
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #1a1e29;
+}
+
+canvas {
+    display: block;
+}
+
+#ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    box-sizing: border-box;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.2rem;
+    color: var(--accent);
+    text-shadow: 0 0 15px var(--accent);
+    letter-spacing: 2px;
+}
+
+p {
+    margin: 5px 0 0;
+    font-size: 0.95rem;
+    color: #94a3b8;
+}
+
+.score-board {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--neon-pink);
+    text-shadow: 0 0 12px var(--neon-pink);
+}
+
+#game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(15, 17, 26, 0.85);
+    padding: 40px 60px;
+    border-radius: 15px;
+    border: 2px solid var(--accent);
+    text-align: center;
+    pointer-events: auto;
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+    backdrop-filter: blur(8px);
+    transition: opacity 0.3s ease;
+}
+
+#game-over.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#game-over h2 {
+    color: #ff007f;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 2.8rem;
+    text-shadow: 0 0 15px #ff007f;
+}
+
+#game-over p {
+    margin-bottom: 25px;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+#restart-btn {
+    background: transparent;
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    padding: 12px 30px;
+    font-size: 1.2rem;
+    font-family: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#restart-btn:hover {
+    background: var(--accent);
+    color: var(--bg-color);
+    box-shadow: 0 0 20px var(--accent);
+}
