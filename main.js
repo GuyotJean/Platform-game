@@ -40,10 +40,12 @@ class Player {
         this.vx = 0;
         this.vy = 0;
         this.speed = 6;
-        this.jumpPower = -14;
+        this.jumpPower = -16;
         this.gravity = 0.6;
         this.grounded = false;
         this.color = '#00ffcc';
+        this.jumpsLeft = 1;
+        this.jumpKeyWasPressed = false;
     }
 
     update(platforms) {
@@ -56,14 +58,38 @@ class Player {
             this.vx = 0;
         }
 
+        const isJumpKeyPressed = keys.ArrowUp || keys.w || keys[' '];
+
         // Jumping
-        if ((keys.ArrowUp || keys.w || keys[' ']) && this.grounded) {
-            this.vy = this.jumpPower;
-            this.grounded = false;
+        if (isJumpKeyPressed) {
+            if (!this.jumpKeyWasPressed) {
+                if (this.grounded) {
+                    this.vy = this.jumpPower;
+                    this.grounded = false;
+                } else if (this.jumpsLeft > 0) {
+                    this.vy = this.jumpPower; // Double jump
+                    this.jumpsLeft--;
+                    // Create some particles at player's feet
+                    for(let i = 0; i < 8; i++) {
+                        let p = new Particle(this.x + this.width / 2, this.y + this.height);
+                        p.color = '#00ffcc';
+                        particles.push(p);
+                    }
+                }
+            }
+            this.jumpKeyWasPressed = true;
+        } else {
+            this.jumpKeyWasPressed = false;
+        }
+
+        // Variable jump height: fall faster if button is released early
+        let currentGravity = this.gravity;
+        if (!isJumpKeyPressed && this.vy < 0) {
+            currentGravity *= 2.5; 
         }
 
         // Apply gravity
-        this.vy += this.gravity;
+        this.vy += currentGravity;
         
         // Update positions
         this.x += this.vx;
@@ -87,11 +113,16 @@ class Player {
                 this.y = platform.y - this.height;
                 this.vy = 0;
                 this.grounded = true;
+                this.jumpsLeft = 1; // Refill double jump on landing
             }
         }
 
-        // Bottom of screen = Death
-        if (this.y > canvas.height) {
+        // Bottom of screen or Water = Death
+        if (this.y + this.height > waterY) {
+            document.querySelector('#game-over p').innerText = "The water caught you!";
+            endGame();
+        } else if (this.y > canvas.height) {
+            document.querySelector('#game-over p').innerText = "You fell into the void!";
             endGame();
         }
     }
@@ -186,16 +217,68 @@ class Particle {
     }
 }
 
+class Fish {
+    constructor() {
+        this.reset();
+        this.x = Math.random() * canvas.width; // Random initial X
+    }
+
+    reset() {
+        this.direction = Math.random() > 0.5 ? 1 : -1;
+        this.x = this.direction === 1 ? -50 : canvas.width + 50;
+        this.yOffset = Math.random() * 200 + 40; // Depth below water surface
+        this.speed = (Math.random() * 1 + 0.5) * this.direction;
+        this.size = Math.random() * 12 + 8;
+        // Neon-ish fish colors
+        const colors = ['#ff007f', '#00ffcc', '#ffdd00'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    update() {
+        this.x += this.speed;
+        if (this.direction === 1 && this.x > canvas.width + 100) this.reset();
+        if (this.direction === -1 && this.x < -100) this.reset();
+    }
+
+    draw(ctx, currentWaterY) {
+        let absY = currentWaterY + this.yOffset;
+        if (absY < canvas.height + 50) { // Only draw if visible on screen
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            // Fish body
+            ctx.ellipse(this.x, absY, this.size, this.size/2.5, 0, 0, Math.PI * 2);
+            // Fish tail
+            ctx.moveTo(this.x - (this.size * 0.5 * this.direction), absY);
+            ctx.lineTo(this.x - (this.size * 1.5 * this.direction), absY - this.size/1.5);
+            ctx.lineTo(this.x - (this.size * 1.5 * this.direction), absY + this.size/1.5);
+            ctx.fill();
+        }
+    }
+}
+
 let player;
 let platforms = [];
 let coins = [];
 let particles = [];
+let fishes = [];
+let waterY;
+let waterSpeed;
+let waterHasRisen = false;
+let startTime;
 
 function init() {
     player = new Player();
     platforms = [];
     coins = [];
     particles = [];
+    fishes = [];
+    for (let i = 0; i < 8; i++) {
+        fishes.push(new Fish());
+    }
+    waterY = canvas.height + 5000; // Hidden out of bounds
+    waterSpeed = 0.5; 
+    waterHasRisen = false;
+    startTime = Date.now();
     score = 0;
     scoreElement.innerText = score;
     isGameOver = false;
@@ -213,7 +296,7 @@ function init() {
 function generateLevel() {
     let currentY = canvas.height - 50;
     for (let i = 0; i < 15; i++) {
-        currentY -= Math.random() * 80 + 80;
+        currentY -= Math.random() * 60 + 70;
         const width = Math.random() * 120 + 80;
         const x = Math.random() * (canvas.width - width);
         platforms.push(new Platform(x, currentY, width, 15));
@@ -246,7 +329,7 @@ function checkCoinCollisions() {
 }
 
 function updateCamera() {
-    const targetMiddle = canvas.height / 2;
+    const targetMiddle = canvas.height / 4; // Position player even higher to see more below
     if (player.y < targetMiddle) {
         const diff = targetMiddle - player.y;
         player.y += diff;
@@ -261,10 +344,8 @@ function updateCamera() {
         for (let p of particles) {
             p.y += diff;
         }
-        
-        // Increase score as you go higher
-        score += Math.floor(diff * 0.1);
-        scoreElement.innerText = score;
+
+        waterY += diff; // Move water down with the camera
     }
     
     // Remove out-of-bounds entities
@@ -272,10 +353,9 @@ function updateCamera() {
     coins = coins.filter(c => c.y < canvas.height + 50 && !c.collected);
     particles = particles.filter(p => p.life > 0);
     
-    // Generate new platforms
     if (platforms.length < 15) {
         const highestPlatform = platforms.reduce((min, p) => p.y < min.y ? p : min, platforms[0]);
-        const newY = highestPlatform.y - (Math.random() * 80 + 80);
+        const newY = highestPlatform.y - (Math.random() * 60 + 70);
         const width = Math.random() * 120 + 80;
         const x = Math.random() * (canvas.width - width);
         platforms.push(new Platform(x, newY, width, 15));
@@ -302,6 +382,24 @@ function gameLoop() {
     checkCoinCollisions();
     updateCamera();
 
+    // Rising Water Logic
+    if (!waterHasRisen) {
+        // Wait precisely 3 seconds before the water appears!
+        if (Date.now() - startTime >= 3000) {
+            waterY = canvas.height - 20;
+            waterHasRisen = true;
+        }
+    } else {
+        // Advance the rising water and slowly increase speed
+        waterY -= waterSpeed;
+        waterSpeed += 0.001;
+
+        // Prevent the water from ever falling completely off the screen
+        if (waterY > canvas.height - 20) {
+            waterY = canvas.height - 20;
+        }
+    }
+
     // Draw platforms
     for (let p of platforms) {
         p.draw(ctx);
@@ -321,6 +419,56 @@ function gameLoop() {
 
     // Draw player
     player.draw(ctx);
+
+    // Update and draw the fish underneath the water layer
+    for (let f of fishes) {
+        f.update();
+        f.draw(ctx, waterY);
+    }
+
+    // Draw the rising water on top with a dynamic multi-wave animation
+    const time = Date.now() * 0.003;
+    
+    // Background faint wave for depth
+    ctx.fillStyle = 'rgba(0, 150, 255, 0.2)';
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height + 500);
+    for (let x = 0; x <= canvas.width; x += 20) {
+        let waveOffset = Math.sin(x * 0.015 + time * 0.7 + Math.PI) * 10;
+        if (x === 0) ctx.lineTo(x, waterY - 8 + waveOffset);
+        else ctx.lineTo(x, waterY - 8 + waveOffset);
+    }
+    ctx.lineTo(canvas.width, canvas.height + 500);
+    ctx.closePath();
+    ctx.fill();
+
+    // Foreground main wave
+    ctx.fillStyle = 'rgba(0, 200, 255, 0.4)';
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height + 500);
+    for (let x = 0; x <= canvas.width; x += 20) {
+        let waveOffset = Math.sin(x * 0.02 + time) * 6;
+        if (x === 0) ctx.lineTo(x, waterY + waveOffset);
+        else ctx.lineTo(x, waterY + waveOffset);
+    }
+    ctx.lineTo(canvas.width, canvas.height + 500);
+    ctx.closePath();
+    ctx.fill();
+
+    // Draw wavy bright glowing crest line
+    ctx.strokeStyle = '#00e5ff';
+    ctx.lineWidth = 4;
+    ctx.lineJoin = 'round';
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = '#00e5ff';
+    ctx.beginPath();
+    for (let x = 0; x <= canvas.width; x += 20) {
+        let waveOffset = Math.sin(x * 0.02 + time) * 6;
+        if (x === 0) ctx.moveTo(x, waterY + waveOffset);
+        else ctx.lineTo(x, waterY + waveOffset);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
 
     animationId = requestAnimationFrame(gameLoop);
 }
