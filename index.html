@@ -11,13 +11,37 @@
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
         <div id="ui">
-            <h1>Neon Gravity</h1>
-            <p>Use Arrow Keys or A/D to move, W or Up or Space to jump.</p>
-            <div class="score-board">Score: <span id="score">0</span></div>
-            <div id="game-over" class="hidden">
+            <div id="main-menu" class="overlay-panel">
+                <h1>Neon Gravity</h1>
+                
+                <div class="menu-account">
+                    <p id="welcome-message" class="hidden">Welcome back, <span id="player-name-display">Player</span>!</p>
+                    <div id="account-creation">
+                        <input type="text" id="username-input" placeholder="Enter username..." maxlength="15">
+                        <button id="create-account-btn" class="secondary-btn">Create Account</button>
+                    </div>
+                </div>
+                
+                <div class="menu-score">
+                    <p>Previous Score: <span id="prev-score-display">0</span></p>
+                </div>
+                
+                <button id="play-btn" class="primary-btn">Play Game</button>
+            </div>
+
+            <div id="game-ui" class="hidden">
+                <h1 class="in-game-title">Neon Gravity</h1>
+                <p class="controls-text">Use Arrow Keys or A/D to move, W/Up/Space to jump.</p>
+                <div class="score-board">Score: <span id="score">0</span></div>
+            </div>
+
+            <div id="game-over" class="hidden overlay-panel">
                 <h2>Game Over!</h2>
                 <p>You fell into the void.</p>
-                <button id="restart-btn">Try Again</button>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button id="restart-btn" class="primary-btn">Try Again</button>
+                    <button id="menu-btn" class="secondary-btn">Menu</button>
+                </div>
             </div>
         </div>
     </div>

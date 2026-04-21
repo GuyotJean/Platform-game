@@ -4,6 +4,18 @@ const scoreElement = document.getElementById('score');
 const gameOverScreen = document.getElementById('game-over');
 const restartBtn = document.getElementById('restart-btn');
 
+// New UI Elements
+const mainMenu = document.getElementById('main-menu');
+const gameUi = document.getElementById('game-ui');
+const playBtn = document.getElementById('play-btn');
+const createAccountBtn = document.getElementById('create-account-btn');
+const usernameInput = document.getElementById('username-input');
+const welcomeMessage = document.getElementById('welcome-message');
+const playerNameDisplay = document.getElementById('player-name-display');
+const accountCreationDiv = document.getElementById('account-creation');
+const prevScoreDisplay = document.getElementById('prev-score-display');
+const menuBtn = document.getElementById('menu-btn');
+
 canvas.width = 800;
 canvas.height = 600;
 
@@ -369,7 +381,11 @@ function updateCamera() {
 function endGame() {
     isGameOver = true;
     gameOverScreen.classList.remove('hidden');
+    gameUi.classList.add('hidden');
     cancelAnimationFrame(animationId);
+    
+    // Save the score
+    localStorage.setItem('gravityPrevScore', score);
 }
 
 function gameLoop() {
@@ -475,8 +491,44 @@ function gameLoop() {
 
 restartBtn.addEventListener('click', () => {
     cancelAnimationFrame(animationId);
+    gameOverScreen.classList.add('hidden');
+    gameUi.classList.remove('hidden');
     init();
 });
 
-// Start game
-init();
+menuBtn.addEventListener('click', () => {
+    gameOverScreen.classList.add('hidden');
+    prevScoreDisplay.innerText = localStorage.getItem('gravityPrevScore') || 0;
+    mainMenu.classList.remove('hidden');
+});
+
+createAccountBtn.addEventListener('click', () => {
+    const name = usernameInput.value.trim();
+    if (name) {
+        localStorage.setItem('gravityUsername', name);
+        accountCreationDiv.classList.add('hidden');
+        welcomeMessage.classList.remove('hidden');
+        playerNameDisplay.innerText = name;
+    }
+});
+
+playBtn.addEventListener('click', () => {
+    mainMenu.classList.add('hidden');
+    gameUi.classList.remove('hidden');
+    init(); 
+});
+
+// App Entry Point
+window.onload = () => {
+    const savedName = localStorage.getItem('gravityUsername');
+    if (savedName) {
+        accountCreationDiv.classList.add('hidden');
+        welcomeMessage.classList.remove('hidden');
+        playerNameDisplay.innerText = savedName;
+    }
+
+    const prevScore = localStorage.getItem('gravityPrevScore');
+    if (prevScore) {
+        prevScoreDisplay.innerText = prevScore;
+    }
+};

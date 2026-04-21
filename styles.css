@@ -68,7 +68,7 @@ p {
     text-shadow: 0 0 12px var(--neon-pink);
 }
 
-#game-over {
+.overlay-panel {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -84,9 +84,10 @@ p {
     transition: opacity 0.3s ease;
 }
 
-#game-over.hidden {
+.overlay-panel.hidden, .hidden {
     opacity: 0;
     pointer-events: none;
+    display: none !important;
 }
 
 #game-over h2 {
@@ -103,7 +104,7 @@ p {
     font-size: 1.1rem;
 }
 
-#restart-btn {
+.primary-btn, .secondary-btn {
     background: transparent;
     color: var(--accent);
     border: 2px solid var(--accent);
@@ -116,10 +117,45 @@ p {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 2px;
+    margin-top: 15px;
 }
 
-#restart-btn:hover {
+.primary-btn:hover {
     background: var(--accent);
     color: var(--bg-color);
     box-shadow: 0 0 20px var(--accent);
+}
+
+.secondary-btn {
+    color: var(--neon-pink);
+    border-color: var(--neon-pink);
+    padding: 10px 20px;
+    font-size: 1rem;
+}
+
+.secondary-btn:hover {
+    background: var(--neon-pink);
+    color: var(--bg-color);
+    box-shadow: 0 0 20px var(--neon-pink);
+}
+
+#username-input {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #555;
+    color: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    margin-right: 10px;
+    outline: none;
+}
+
+#username-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+}
+
+.menu-account, .menu-score {
+    margin: 20px 0;
 }
