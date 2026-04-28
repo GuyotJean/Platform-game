@@ -43,7 +43,15 @@ const keys = {
 // Listen for when a key is pressed down
 window.addEventListener('keydown', (e) => {
     // If the key pressed is one we track in our 'keys' object, set its state to true (pressed)
-    if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+    if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = true;
+
+        // Start the water countdown on the very first keypress
+        if (!playerHasStarted) {
+            playerHasStarted = true;
+            startTime = Date.now();
+        }
+    }
 });
 
 // Listen for when a key is released
@@ -71,8 +79,10 @@ let waterY;
 let waterSpeed;
 // Boolean flag indicating if the water has started rising yet
 let waterHasRisen = false;
-// Records the timestamp when the current game started, used to delay the water
+// Records the timestamp of the player's first keypress, used to delay the water
 let startTime;
+// Flag that becomes true the moment the player presses any key for the first time
+let playerHasStarted = false;
 
 // --- Game Initialization ---
 // This function sets up a new game, resetting all variables and entities
@@ -97,8 +107,9 @@ function init() {
     waterSpeed = 0.5;
     // Reset the water flag so it waits before rising
     waterHasRisen = false;
-    // Record the start time so we can calculate the 3-second delay
-    startTime = Date.now();
+    // Reset the player-started flag so the countdown doesn't begin until first keypress
+    playerHasStarted = false;
+    startTime = null;
 
     // Reset score to 0 and update the UI
     score = 0;
@@ -276,8 +287,8 @@ function gameLoop() {
 
     // 3. Rising Water Logic
     if (!waterHasRisen) {
-        // The water waits exactly 3 seconds (3000ms) before it starts rising
-        if (Date.now() - startTime >= 3000) {
+        // Only start the countdown once the player has pressed a key
+        if (playerHasStarted && Date.now() - startTime >= 3000) {
             // Bring the water into view right at the bottom of the screen
             waterY = canvas.height - 20;
             // Mark the flag so it doesn't enter this block again
