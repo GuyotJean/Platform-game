@@ -250,6 +250,14 @@ function endGame() {
 
     // Save the final score into localStorage so it persists across page reloads
     localStorage.setItem('gravityPrevScore', score);
+
+    // Also send the score to the backend for server-side storage
+    const username = localStorage.getItem('gravityUsername') || 'Anonymous';
+    fetch('/api/scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: username, score: score })
+    }).catch(err => console.warn('Could not save score to server:', err));
 }
 
 // --- Main Game Loop ---
@@ -407,6 +415,13 @@ createAccountBtn.addEventListener('click', () => {
         welcomeMessage.classList.remove('hidden');
         // Update the span to show their name
         playerNameDisplay.innerText = name;
+
+        // Register the player name on the backend
+        fetch('/api/players', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        }).catch(err => console.warn('Could not register player on server:', err));
     }
 });
 
