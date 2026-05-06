@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d');
 const scoreElement = document.getElementById('score');
 const gameOverScreen = document.getElementById('game-over');
 
+//Restart the gamegit config user.name "Jean Guyot"
 const restartBtn = document.getElementById('restart-btn');
 
 // --- UI Elements Setup ---
@@ -46,8 +47,8 @@ window.addEventListener('keydown', (e) => {
     if (keys.hasOwnProperty(e.key)) {
         keys[e.key] = true;
 
-        // Start the water countdown on the very first keypress
-        if (!playerHasStarted) {
+        // Start the water countdown on the very first jump keypress
+        if (!playerHasStarted && (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ')) {
             playerHasStarted = true;
             startTime = Date.now();
         }
