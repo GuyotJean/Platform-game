@@ -47,8 +47,13 @@ window.addEventListener('keydown', (e) => {
     if (keys.hasOwnProperty(e.key)) {
         keys[e.key] = true;
 
+<<<<<<< HEAD
         // Start the water countdown on the very first jump keypress
         if (!playerHasStarted && (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ')) {
+=======
+        // Start the water countdown on the very first keypress
+        if (!playerHasStarted) {
+>>>>>>> 104452c1abbe7210c50f2b6bf126e1765d8af4e4
             playerHasStarted = true;
             startTime = Date.now();
         }
