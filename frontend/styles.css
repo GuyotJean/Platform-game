@@ -159,3 +159,90 @@ p {
 .menu-account, .menu-score {
     margin: 20px 0;
 }
+
+/* ── Menu Buttons ──────────────────────────── */
+.menu-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* ── Ranking Page ──────────────────────────── */
+.ranking-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.ranking-page h1 {
+    font-size: 2.5rem;
+    color: var(--accent);
+    text-shadow: 0 0 20px var(--accent), 0 0 40px rgba(0, 255, 204, 0.3);
+    margin: 0 0 5px;
+    letter-spacing: 2px;
+}
+
+.ranking-subtitle {
+    color: #64748b;
+    font-size: 1rem;
+    margin: 0 0 30px;
+    font-style: italic;
+}
+
+#ranking-table {
+    width: 100%;
+    max-width: 550px;
+    border-collapse: collapse;
+    font-size: 1rem;
+    margin-bottom: 30px;
+    background: rgba(15, 17, 26, 0.7);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 255, 204, 0.15);
+    box-shadow: 0 0 30px rgba(0, 255, 204, 0.08);
+}
+
+#ranking-table thead th {
+    color: var(--accent);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    padding: 14px 16px;
+    border-bottom: 2px solid rgba(0, 255, 204, 0.25);
+    background: rgba(0, 255, 204, 0.05);
+}
+
+#ranking-table tbody td {
+    padding: 12px 16px;
+    color: var(--text-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition: background 0.2s ease;
+}
+
+#ranking-table tbody tr:hover td {
+    background: rgba(0, 255, 204, 0.06);
+}
+
+/* Medal rows */
+.rank-cell { font-size: 1.2rem; }
+.score-cell { font-weight: bold; color: var(--neon-pink); text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); }
+.date-cell { color: #64748b; font-size: 0.85rem; }
+
+.rank-1 td { background: rgba(255, 215, 0, 0.06); }
+.rank-2 td { background: rgba(192, 192, 192, 0.05); }
+.rank-3 td { background: rgba(205, 127, 50, 0.05); }
+
+.rank-1 .rank-cell { font-size: 1.4rem; }
+
+.empty-lb {
+    color: #555;
+    font-style: italic;
+    text-align: center;
+    padding: 20px !important;
+}
+

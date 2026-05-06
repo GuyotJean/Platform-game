@@ -247,6 +247,7 @@ function updateCamera() {
     }
 }
 
+
 // --- Game Over Logic ---
 // Called when the player dies (e.g., touches the rising water)
 function endGame() {
@@ -462,4 +463,5 @@ window.onload = () => {
         // Update the main menu to show their last score
         prevScoreDisplay.innerText = prevScore;
     }
+
 };

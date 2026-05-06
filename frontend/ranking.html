@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Gravity - Ranking</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="ranking-page">
+        <h1>🏆 Top 10 High Scores</h1>
+        <p class="ranking-subtitle">Only the best survive the rising tide</p>
+
+        <table id="ranking-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Score</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="ranking-body">
+                <tr><td colspan="4" class="empty-lb">Loading...</td></tr>
+            </tbody>
+        </table>
+
+        <button class="primary-btn" onclick="window.location.href='index.html'">← Back to Game</button>
+    </div>
+
+    <script>
+        fetch('/api/scores')
+            .then(res => res.json())
+            .then(scores => {
+                const tbody = document.getElementById('ranking-body');
+                if (!scores || scores.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="empty-lb">No scores yet — be the first!</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = scores.map((s, i) => {
+                    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`;
+                    const date = new Date(s.played_at).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric', year: 'numeric'
+                    });
+                    return `<tr class="${i < 3 ? 'top-three rank-' + (i + 1) : ''}">
+                        <td class="rank-cell">${medal}</td>
+                        <td>${s.name}</td>
+                        <td class="score-cell">${s.score}</td>
+                        <td class="date-cell">${date}</td>
+                    </tr>`;
+                }).join('');
+            })
+            .catch(() => {
+                document.getElementById('ranking-body').innerHTML =
+                    '<tr><td colspan="4" class="empty-lb">Could not load scores</td></tr>';
+            });
+    </script>
+</body>
+</html>
