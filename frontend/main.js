@@ -47,13 +47,8 @@ window.addEventListener('keydown', (e) => {
     if (keys.hasOwnProperty(e.key)) {
         keys[e.key] = true;
 
-<<<<<<< HEAD
         // Start the water countdown on the very first jump keypress
         if (!playerHasStarted && (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ')) {
-=======
-        // Start the water countdown on the very first keypress
-        if (!playerHasStarted) {
->>>>>>> 104452c1abbe7210c50f2b6bf126e1765d8af4e4
             playerHasStarted = true;
             startTime = Date.now();
         }
@@ -83,6 +78,8 @@ let fishes = [];
 let waterY;
 // How fast the water is currently rising (pixels per frame)
 let waterSpeed;
+// Maximum speed where the water stabilizes to reduce player pressure
+const MAX_WATER_SPEED = 1.0;
 // Boolean flag indicating if the water has started rising yet
 let waterHasRisen = false;
 // Records the timestamp of the player's first keypress, used to delay the water
@@ -305,8 +302,10 @@ function gameLoop() {
         // Advance the rising water upwards (subtracting from Y moves it up)
         waterY -= waterSpeed;
 
-        // Slowly accelerate the water's speed over time to increase difficulty
-        waterSpeed += 0.001;
+        // Accelerate water slowly until it stabilizes at MAX_WATER_SPEED
+        if (waterSpeed < MAX_WATER_SPEED) {
+            waterSpeed = Math.min(waterSpeed + 0.0005, MAX_WATER_SPEED);
+        }
 
         // Prevent the water from ever falling below the screen again due to camera movement
         if (waterY > canvas.height - 20) {
@@ -418,6 +417,13 @@ menuBtn.addEventListener('click', () => {
     // Load the previous score from local storage to display on the menu
     prevScoreDisplay.innerText = localStorage.getItem('gravityPrevScore') || 0;
     mainMenu.classList.remove('hidden'); // Show the main menu screen
+});
+
+// Allow pressing Enter in username input to create account
+usernameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        createAccountBtn.click();
+    }
 });
 
 // When the user clicks the button to create their account/username

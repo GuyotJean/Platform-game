@@ -6,9 +6,9 @@ class Player {
         this.y = canvas.height - this.height - 150;
         this.vx = 0;
         this.vy = 0;
-        this.speed = 6;
-        this.jumpPower = -16;
-        this.gravity = 0.6;
+        this.speed = 5;
+        this.jumpPower = -13.5;
+        this.gravity = 0.42;
         this.grounded = false;
         this.color = '#00ffcc';
         this.jumpsLeft = 1;
@@ -37,7 +37,7 @@ class Player {
                     this.vy = this.jumpPower; // Double jump
                     this.jumpsLeft--;
                     // Create some particles at player's feet
-                    for(let i = 0; i < 8; i++) {
+                    for (let i = 0; i < 8; i++) {
                         let p = new Particle(this.x + this.width / 2, this.y + this.height);
                         p.color = '#00ffcc';
                         particles.push(p);
@@ -49,15 +49,15 @@ class Player {
             this.jumpKeyWasPressed = false;
         }
 
-        // Variable jump height: fall faster if button is released early
+        // Variable jump height: fall slightly faster if button is released early
         let currentGravity = this.gravity;
         if (!isJumpKeyPressed && this.vy < 0) {
-            currentGravity *= 2.5; 
+            currentGravity *= 1.5;
         }
 
         // Apply gravity
         this.vy += currentGravity;
-        
+
         // Update positions
         this.x += this.vx;
         this.y += this.vy;
@@ -76,7 +76,7 @@ class Player {
                 this.y + this.height >= platform.y &&
                 this.x + this.width > platform.x &&
                 this.x < platform.x + platform.width) {
-                
+
                 this.y = platform.y - this.height;
                 this.vy = 0;
                 this.grounded = true;
@@ -98,10 +98,10 @@ class Player {
         ctx.fillStyle = this.color;
         ctx.shadowBlur = 15;
         ctx.shadowColor = this.color;
-        
+
         // Draw trailing effect for motion (optional enhancement)
         ctx.fillRect(this.x, this.y, this.width, this.height);
-        
+
         ctx.shadowBlur = 0;
     }
 }

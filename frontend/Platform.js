@@ -11,7 +11,7 @@ class Platform {
     draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
-        
+
         // Top highlight
         ctx.fillStyle = this.glow;
         ctx.shadowBlur = 10;
